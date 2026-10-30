@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { Readable } from 'node:stream';
+const temp=fs.mkdtempSync(path.join(os.tmpdir(),'bharatdrive-test-'));
+process.env.DATABASE_PATH=path.join(temp,'test.sqlite');
+const {route,db,createAdminAccount}=await import('./server.mjs');
+async function call(url,{method='GET',cookie='',csrf='',data}={}){const headers={};if(cookie)headers.cookie=cookie;if(csrf)headers['x-csrf-token']=csrf;if(data!==undefined)headers['content-type']='application/json';const req=Readable.from(data===undefined?[]:[JSON.stringify(data)]);Object.assign(req,{method,url,headers});const res={status:0,headers:{},writeHead(s,h){this.status=s;this.headers=h;},end(body=''){this.body=body;}};await route(req,res);const json=String(res.headers['content-type']||'').includes('application/json');const body=json&&res.body?JSON.parse(res.body):res.body;return {status:res.status,headers:res.headers,body};}
+try{
+ await createAdminAccount('Fleet Admin','admin@example.test','AdminPassword!123');const setup=await call('/api/auth/login',{method:'POST',data:{email:'admin@example.test',password:'AdminPassword!123'}});assert.equal(setup.status,200);const adminCookie=setup.headers['set-cookie'].split(';')[0],adminCsrf=setup.body.csrf;assert.equal(setup.body.user.role,'admin');
+ const created=await call('/api/vehicles',{method:'POST',cookie:adminCookie,csrf:adminCsrf,data:{name:'City Hatch',brand:'Example',model:'One',category:'Hatchback',pricePerDay:1500,location:'Bengaluru',fuelType:'Petrol',transmission:'Manual',seats:5,description:'Smoke test vehicle',active:true}});assert.equal(created.status,201);const vehicle=created.body.vehicle;
+ assert.equal((await call('/api/vehicles?brand=Example&minPrice=1000&maxPrice=2000&seats=5')).body.vehicles.length,1);assert.equal((await call('/api/vehicles?brand=Other')).body.vehicles.length,0);
+ const reg1=await call('/api/auth/register',{method:'POST',data:{name:'Rider One',email:'rider1@example.test',password:'RiderPassword!123'}});assert.equal(reg1.status,200);const cookie1=reg1.headers['set-cookie'].split(';')[0],csrf1=reg1.body.csrf;
+ const start=new Date(Date.now()+9*86400000),pickup=start.toISOString().slice(0,10),end=new Date(start.getTime()+3*86400000).toISOString().slice(0,10);const booking=await call('/api/bookings',{method:'POST',cookie:cookie1,csrf:csrf1,data:{vehicleId:vehicle.id,pickup,returnDate:end,location:'Bengaluru'}});assert.equal(booking.status,201);assert.equal(booking.body.booking.subtotal,4500);assert.equal(booking.body.booking.tax,810);assert.equal(booking.body.booking.total,7310);
+ const overlap=await call('/api/bookings',{method:'POST',cookie:cookie1,csrf:csrf1,data:{vehicleId:vehicle.id,pickup,returnDate:end,location:'Bengaluru'}});assert.equal(overlap.status,409);
+ assert.equal((await call('/api/bookings',{method:'POST',cookie:cookie1,csrf:csrf1,data:{vehicleId:vehicle.id,pickup,returnDate:pickup,location:'Bengaluru'}})).status,400);
+ assert.equal((await call('/api/admin/stats',{cookie:cookie1})).status,403);assert.equal((await call('/api/bookings',{cookie:cookie1})).body.bookings.length,1);
+ const cancel=await call(`/api/bookings/${booking.body.booking.id}/cancel`,{method:'POST',cookie:cookie1,csrf:csrf1,data:{}});assert.equal(cancel.status,200);assert.equal(cancel.body.booking.status,'cancelled');
+ const reg2=await call('/api/auth/register',{method:'POST',data:{name:'Rider Two',email:'rider2@example.test',password:'RiderPassword!123'}});const cookie2=reg2.headers['set-cookie'].split(';')[0];const booking2=await call('/api/bookings',{method:'POST',cookie:cookie2,csrf:reg2.body.csrf,data:{vehicleId:vehicle.id,pickup,returnDate:end,location:'Bengaluru'}});assert.equal(booking2.status,201);
+ assert.equal((await call('/api/bookings',{cookie:cookie2})).body.bookings.length,1);
+ let changed;for(const status of ['confirmed','active','completed']){changed=await call(`/api/admin/bookings/${booking2.body.booking.id}/status`,{method:'PATCH',cookie:adminCookie,csrf:adminCsrf,data:{status}});assert.equal(changed.status,200);}
+ const receipt=await call(`/api/bookings/${booking2.body.booking.id}/receipt`,{cookie:cookie2});assert.equal(receipt.status,200);assert.match(receipt.body,/BharatDrive booking receipt/);assert.equal((await call(`/api/bookings/${booking2.body.booking.id}/receipt`,{cookie:cookie1})).status,404);
+ const dateFiltered=await call(`/api/bookings?date=${pickup}&status=completed`,{cookie:adminCookie});assert.equal(dateFiltered.body.bookings.length,1);const stats=await call('/api/admin/stats',{cookie:adminCookie});assert.equal(stats.status,200);assert.equal(stats.body.totalVehicles,1);assert.equal(stats.body.availableVehicles,1);assert.equal(stats.body.customers,2);assert.equal(stats.body.completed,1);assert.equal((await call('/api/admin/vehicles',{cookie:adminCookie})).body.vehicles.length,1);
+ console.log('PASS: secure admin CLI account creation; login and role access; vehicle creation; vehicle and booking filters; customer registration; server-calculated price; invalid dates; overlap rejection; cancellation release; booking status transitions; customer privacy; receipt; live dashboard counts.');
+}finally{db.close();fs.rmSync(temp,{recursive:true,force:true});}

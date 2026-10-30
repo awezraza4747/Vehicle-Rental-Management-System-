@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050505">
+  <meta name="description" content="BharatDrive vehicle rentals. Browse a fleet, check dates and manage bookings.">
+  <title>BharatDrive — Vehicle rentals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css?v=5">
+  <script src="./script.js?v=8" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="BharatDrive home"><span class="brand-mark">B</span><span>Bharat<span class="brand-light">Drive</span></span></a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#fleet">Fleet</a><a href="#how">How it works</a><a href="#about">About us</a><a href="#account" id="accountNav" hidden>My bookings</a><a href="#admin" id="adminNav" hidden>Dashboard</a>
+    </nav>
+    <div class="nav-actions" id="navActions"><button class="btn btn-quiet" data-open="loginDialog">Log in</button><button class="btn btn-lime" data-open="registerDialog">Create account</button></div>
+    <div class="nav-actions" id="signedActions" hidden><span class="user-label" id="userLabel"></span><button class="btn btn-quiet" id="logoutBtn">Log out</button></div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="pulse"></span> YOUR NEXT RIDE STARTS HERE</div>
+        <h1>Take the long way.<br><span>Make it yours.</span></h1>
+        <p>Browse available vehicles, choose your dates and book directly. Clear pricing, simple plans, and your trip details in one place.</p>
+        <a class="btn btn-lime btn-large" href="#fleet">Explore the fleet <span aria-hidden="true">↗</span></a>
+        <div class="hero-proof"><span class="proof-icon">↗</span><span>Pick your ride. Set your dates. We’ll handle the rest.</span></div>
+      </div>
+      <div class="hero-art" aria-label="Decorative illustration of a rental car">
+        <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+        <div class="art-tag tag-top"><span class="tag-dot"></span> READY WHEN YOU ARE</div>
+        <div class="vehicle-illustration"><div class="car-roof"></div><div class="car-body"><div class="car-window"></div><div class="car-door"></div><div class="car-light"></div></div><div class="wheel wheel-left"></div><div class="wheel wheel-right"></div></div>
+        <div class="art-tag tag-bottom"><strong>01</strong><span>Find your<br>freedom</span></div>
+      </div>
+      <div class="hero-gridline"></div>
+    </section>
+
+    <section class="search-panel wrap" aria-label="Search available vehicles">
+      <div class="search-intro"><span class="eyebrow">FIND YOUR RIDE</span><h2>Where to next?</h2></div>
+      <form class="search-fields" id="searchForm">
+        <label class="search-field"><span>Pickup location</span><input id="searchLocation" list="pickupLocationOptions" placeholder="Any city or local area" autocomplete="off"></label>
+        <label class="search-field"><span>Pickup date</span><input type="date" id="searchPickup"></label>
+        <label class="search-field"><span>Return date</span><input type="date" id="searchReturn"></label>
+        <button class="btn btn-lime" type="submit">Search vehicles <span>→</span></button>
+      </form>
+    </section>
+
+    <section class="cities-section wrap" aria-labelledby="citiesTitle">
+      <div class="cities-heading"><div><span class="eyebrow">PICK A PLACE</span><h2 id="citiesTitle">Pickup cities &amp; areas</h2></div><p>Explore Anantapuramu and nearby pickup areas.</p></div>
+      <div class="city-grid" id="cityGrid" aria-live="polite"></div>
+      <p class="cities-empty" id="citiesEmpty" hidden>Pickup areas will appear here as the fleet is added.</p>
+    </section>
+
+    <section class="section wrap" id="fleet">
+      <div class="section-heading"><div><span class="eyebrow">THE COLLECTION</span><h2>Find your kind of drive</h2><p>Sample vehicles for Anantapuramu and nearby towns. Compare fuel, transmission, pickup area, and daily rate.</p></div><div class="fleet-total" id="fleetCount">Loading fleet…</div></div>
+      <div class="category-rail" id="categoryRail" role="group" aria-label="Browse vehicle categories"></div>
+      <div class="filters">
+        <label class="filter-search"><span aria-hidden="true">⌕</span><input id="filterSearch" placeholder="Search by name or brand" aria-label="Search by name or brand"></label>
+        <select id="filterCategory" aria-label="Filter by category"><option value="">All categories</option></select>
+        <select id="filterBrand" aria-label="Filter by brand"><option value="">All brands</option></select>
+        <select id="filterFuel" aria-label="Filter by fuel"><option value="">Any fuel</option><option>Petrol</option><option>Diesel</option><option>Electric</option><option>Hybrid</option><option>CNG</option></select>
+        <select id="filterTransmission" aria-label="Filter by transmission"><option value="">Any transmission</option><option>Manual</option><option>Automatic</option></select>
+        <select id="filterSeats" aria-label="Filter by minimum seats"><option value="">Any seats</option><option value="2">2+ seats</option><option value="4">4+ seats</option><option value="5">5+ seats</option><option value="7">7+ seats</option></select>
+        <input class="price-filter" id="filterMinPrice" type="number" min="0" placeholder="Min ₹/day" aria-label="Minimum price per day">
+        <input class="price-filter" id="filterMaxPrice" type="number" min="0" placeholder="Max ₹/day" aria-label="Maximum price per day">
+        <select id="filterSort" aria-label="Sort vehicles"><option value="recommended">Recommended</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option></select>
+      </div>
+      <div class="fleet-grid" id="fleetGrid" aria-live="polite"></div>
+      <div class="empty-state" id="fleetEmpty" hidden><div class="empty-icon">⌁</div><h3>No vehicles found</h3><p>There are no vehicles matching this place, date, and filter combination.</p><button class="btn btn-lime" id="resetFleetFilters" type="button">Show all vehicles</button></div>
+    </section>
+
+    <section class="how-section" id="how"><div class="wrap"><div class="section-heading"><div><span class="eyebrow">SIMPLE BY DESIGN</span><h2>Three steps. Then go.</h2></div></div><div class="steps"><article class="step"><span class="step-no">01</span><h3>Choose your ride</h3><p>Explore the fleet and find the vehicle that fits your plans.</p></article><article class="step"><span class="step-no">02</span><h3>Pick your dates</h3><p>Check availability for your rental period before confirming.</p></article><article class="step"><span class="step-no">03</span><h3>Hit the road</h3><p>Keep your booking details close in your customer dashboard.</p></article></div></div></section>
+
+    <section class="section wrap account-section" id="account" hidden>
+      <div class="section-heading"><div><span class="eyebrow">YOUR GARAGE</span><h2>My bookings</h2><p>View your rental history and manage upcoming trips.</p></div><div class="account-stats" id="accountStats"></div></div>
+      <div class="booking-list" id="myBookings"></div>
+    </section>
+
+    <section class="section wrap admin-section" id="admin" hidden>
+      <div class="section-heading"><div><span class="eyebrow">CONTROL ROOM</span><h2>Admin dashboard</h2><p>Manage vehicles, bookings and customers.</p></div><button class="btn btn-lime" id="addVehicleBtn">＋ Add vehicle</button></div>
+      <div class="admin-stats" id="adminStats"></div>
+      <div class="admin-tabs" role="tablist"><button class="admin-tab active" data-tab="bookings">Bookings</button><button class="admin-tab" data-tab="vehicles">Vehicles</button><button class="admin-tab" data-tab="customers">Customers</button></div>
+      <div class="admin-pane" id="adminBookings"><div class="table-tools"><input id="bookingSearch" placeholder="Search booking or customer"><input id="bookingDate" type="date" aria-label="Filter by pickup date"><select id="bookingStatus"><option value="">All statuses</option><option>pending</option><option>confirmed</option><option>active</option><option>completed</option><option>cancelled</option><option>rejected</option></select></div><div class="table-scroll"><table><thead><tr><th>Booking</th><th>Customer</th><th>Vehicle</th><th>Rental period</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody id="adminBookingRows"></tbody></table></div></div>
+      <div class="admin-pane" id="adminVehicles" hidden><div class="table-scroll"><table><thead><tr><th>Vehicle</th><th>Category</th><th>Daily rate</th><th>Location</th><th>Status</th><th>Actions</th></tr></thead><tbody id="adminVehicleRows"></tbody></table></div></div>
+      <div class="admin-pane" id="adminCustomers" hidden><div class="table-scroll"><table><thead><tr><th>Customer</th><th>Email</th><th>Joined</th><th>Bookings</th></tr></thead><tbody id="adminCustomerRows"></tbody></table></div></div>
+    </section>
+  </main>
+
+    <section class="about-section wrap" id="about" aria-labelledby="aboutTitle">
+    <div class="about-card">
+      <div class="about-copy">
+        <span class="eyebrow">ABOUT BHARATDRIVE</span>
+        <h2 id="aboutTitle">Good journeys begin close to home.</h2>
+        <p>BharatDrive makes it easy to explore rental options for everyday travel and weekend trips. Browse cars, motorcycles, and scooters, check dates, and choose a pickup area across Anantapuramu and nearby towns.</p>
+        <a class="btn btn-lime" href="#fleet">Explore the fleet <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="about-points" aria-label="What BharatDrive offers">
+        <div class="about-point"><strong>Local pickup choices</strong><span>Anantapuramu and nearby areas</span></div>
+        <div class="about-point"><strong>Ride options</strong><span>Cars, motorcycles, scooters, and more</span></div>
+        <div class="about-point"><strong>Simple trip planning</strong><span>Browse vehicles, check dates, and manage bookings online</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="wrap footer-inner"><a class="brand" href="#home"><span class="brand-mark">B</span><span>Bharat<span class="brand-light">Drive</span></span></a><p>Good drives start with a good plan.</p><span>© <span id="year"></span> BharatDrive</span></div></footer>
+  <datalist id="pickupLocationOptions"></datalist>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="dialog" id="loginDialog"><form class="dialog-card" id="loginForm"><button class="dialog-close" type="button" data-close aria-label="Close">×</button><span class="eyebrow">WELCOME BACK</span><h2>Log in to BharatDrive</h2><p class="dialog-sub">Pick up where your next trip begins.</p><label>Email address<input name="email" type="email" required autocomplete="email"></label><label>Password<input name="password" type="password" required autocomplete="current-password"></label><p class="inline-error" id="loginError" hidden></p><button class="btn btn-lime btn-large full" type="submit">Log in</button><p class="dialog-foot">New here? <button type="button" class="text-button" data-switch="registerDialog">Create an account</button></p></form></dialog>
+  <dialog class="dialog" id="registerDialog"><form class="dialog-card" id="registerForm"><button class="dialog-close" type="button" data-close aria-label="Close">×</button><span class="eyebrow">JOIN THE JOURNEY</span><h2>Create your account</h2><p class="dialog-sub">Your trips, all in one place.</p><label>Full name<input name="name" required minlength="2" maxlength="80" autocomplete="name"></label><label>Email address<input name="email" type="email" required autocomplete="email"></label><label>Password<input name="password" type="password" required minlength="10" autocomplete="new-password"><small>At least 10 characters.</small></label><p class="inline-error" id="registerError" hidden></p><button class="btn btn-lime btn-large full" type="submit">Create account</button><p class="dialog-foot">Already have an account? <button type="button" class="text-button" data-switch="loginDialog">Log in</button></p></form></dialog>
+  <dialog class="dialog" id="bookingDialog"><form class="dialog-card wide" id="bookingForm"><button class="dialog-close" type="button" data-close aria-label="Close">×</button><span class="eyebrow">MAKE IT OFFICIAL</span><h2>Book this vehicle</h2><div class="selected-vehicle" id="selectedVehicle"></div><input type="hidden" name="vehicleId"><div class="form-row"><label>Pickup date<input name="pickup" type="date" required></label><label>Return date<input name="return" type="date" required></label></div><label>Pickup location<input name="location" list="pickupLocationOptions" required maxlength="120" placeholder="City, neighborhood, or pickup point" autocomplete="off"></label><div class="price-breakdown" id="priceBreakdown"></div><p class="inline-error" id="bookingError" hidden></p><button class="btn btn-lime btn-large full" type="submit">Confirm booking</button><p class="fine-print">Price is calculated from the vehicle's listed daily rate and dates. A refundable deposit, if required, is shown separately.</p></form></dialog>
+  <dialog class="dialog" id="vehicleDialog"><form class="dialog-card wide" id="vehicleForm"><button class="dialog-close" type="button" data-close aria-label="Close">×</button><span class="eyebrow">FLEET MANAGEMENT</span><h2 id="vehicleFormTitle">Add a vehicle</h2><input type="hidden" name="id"><div class="form-row"><label>Vehicle name<input name="name" required maxlength="100"></label><label>Brand<input name="brand" required maxlength="60"></label></div><div class="form-row"><label>Model<input name="model" required maxlength="60"></label><label>Category<input name="category" required maxlength="40" placeholder="SUV, Sedan, Bike…"></label></div><div class="form-row"><label>Price per day (₹)<input name="pricePerDay" type="number" min="1" step="1" required></label><label>Location<input name="location" list="pickupLocationOptions" required maxlength="100" placeholder="City or neighborhood" autocomplete="off"></label></div><div class="form-row"><label>Fuel type<select name="fuelType" required><option>Petrol</option><option>Diesel</option><option>Electric</option><option>Hybrid</option><option>CNG</option></select></label><label>Transmission<select name="transmission" required><option>Manual</option><option>Automatic</option></select></label></div><div class="form-row"><label>Seats<input name="seats" type="number" min="1" max="20" required></label><label>Image URL<input name="image" type="url" placeholder="https://…"></label></div><label>Description<textarea name="description" rows="3" maxlength="700"></textarea></label><label>Or upload an image<input name="imageFile" type="file" accept="image/jpeg,image/png,image/webp"></label><div class="upload-preview" id="uploadPreview"></div><label class="check-label"><input name="active" type="checkbox" checked> Available for booking</label><button class="btn btn-lime btn-large full" type="submit">Save vehicle</button></form></dialog>
+  <dialog class="dialog" id="detailDialog"><div class="dialog-card wide" id="vehicleDetail"></div></dialog>
+</body>
+</html>

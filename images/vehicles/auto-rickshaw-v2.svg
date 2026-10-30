@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+<defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#13191d"/><stop offset="1" stop-color="#07090b"/></linearGradient><linearGradient id="canopy" x2="0" y2="1"><stop stop-color="#ffe36b"/><stop offset="1" stop-color="#e4a400"/></linearGradient><linearGradient id="green" x2="0" y2="1"><stop stop-color="#35c987"/><stop offset="1" stop-color="#087248"/></linearGradient><linearGradient id="glass" x2="1" y2="1"><stop stop-color="#315a70"/><stop offset="1" stop-color="#101b24"/></linearGradient><radialGradient id="glow"><stop stop-color="#b6ff00" stop-opacity=".2"/><stop offset="1" stop-color="#b6ff00" stop-opacity="0"/></radialGradient></defs>
+<rect width="1200" height="700" fill="url(#bg)"/><ellipse cx="610" cy="325" rx="440" ry="265" fill="url(#glow)"/><path d="M0 520h1200v180H0z" fill="#080a0c"/><ellipse cx="610" cy="540" rx="430" ry="42" fill="#000" opacity=".58"/>
+<path d="M250 334 310 248q15-23 44-23h255q34 0 56 28l67 83H250z" fill="url(#canopy)" stroke="#fff09b" stroke-width="6"/>
+<path d="M327 250h160v75H292z" fill="url(#glass)" stroke="#70663f" stroke-width="7"/><path d="M508 250h92q30 0 49 27l36 48H508z" fill="url(#glass)" stroke="#70663f" stroke-width="7"/>
+<path d="M247 332h458l76 45 120 34 21 43-20 44H232l-9-74q-4-57 24-92z" fill="url(#green)" stroke="#a2edc4" stroke-opacity=".6" stroke-width="5"/>
+<path d="M255 354h232v123H233l-2-75q0-32 24-48z" fill="#15945e"/><path d="M510 343h137v131H510z" fill="#075d3c" stroke="#8ce0b2" stroke-width="6"/><path d="M528 355h101v66H528z" fill="url(#glass)"/><path d="M498 344v131M648 342v132M276 354v121" stroke="#c0f0d5" stroke-opacity=".52" stroke-width="6"/>
+<path d="M668 341 731 379l120 33-20 53H661z" fill="#14935d"/><path d="M858 402h37q14 0 19 14l8 21h-58z" fill="#e9f6ff"/><path d="M234 393h34v34h-33z" fill="#ff6555"/>
+<path d="M270 477h635" stroke="#b6ff00" stroke-opacity=".26" stroke-width="5"/>
+<circle cx="331" cy="505" r="67" fill="#111519" stroke="#4c555c" stroke-width="10"/><circle cx="331" cy="505" r="35" fill="#65717a" stroke="#b5c0c7" stroke-width="9"/><circle cx="331" cy="505" r="15" fill="#1c2226"/>
+<circle cx="839" cy="505" r="67" fill="#111519" stroke="#4c555c" stroke-width="10"/><circle cx="839" cy="505" r="35" fill="#65717a" stroke="#b5c0c7" stroke-width="9"/><circle cx="839" cy="505" r="15" fill="#1c2226"/>
+<text x="600" y="642" text-anchor="middle" fill="#a2aab1" font-family="Arial,sans-serif" font-size="23" letter-spacing="5">LOCAL AUTO RICKSHAW</text></svg>
